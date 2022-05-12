@@ -14,15 +14,17 @@ task(TASK_STORE_DEPLOYMENTS, "store deployments")
       deployedContracts[networkID] = {};
     }
 
-    if (
-      typeof deployedContracts[networkID][taskArgs.contractName] === "undefined"
-    ) {
-      deployedContracts[networkID][taskArgs.contractName] =
-        taskArgs.contractAddress;
-    } else {
-      deployedContracts[networkID][taskArgs.contractName] =
-        taskArgs.contractAddress;
-    }
+    deployedContracts[networkID][taskArgs.contractName] =
+      taskArgs.contractAddress;
+    // if (
+    //   typeof deployedContracts[networkID][taskArgs.contractName] === "undefined"
+    // ) {
+    //   deployedContracts[networkID][taskArgs.contractName] =
+    //     taskArgs.contractAddress;
+    // } else {
+    //   deployedContracts[networkID][taskArgs.contractName] =
+    //     taskArgs.contractAddress;
+    // }
 
     fs.writeSync(
       fs.openSync("./deployments/deployments.json", "w"),
