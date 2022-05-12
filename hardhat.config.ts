@@ -12,6 +12,7 @@ import "./tasks/setFeeToken";
 import "./tasks/storeDeployments";
 import "./tasks/mapContracts";
 import "./tasks/unMapContracts";
+import "./tasks/approveFees";
 
 dotenv.config();
 
@@ -28,13 +29,16 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
 // You need to export an object to set up your config
 // Go to https://hardhat.org/config/ to learn more
 
-const mnemonic = process.env.MNEMONIC;
+const mnemonic = process.env.MNEMONIC || "";
 
 const config: HardhatUserConfig = {
   solidity: {
     compilers: [
       {
         version: "0.8.0",
+      },
+      {
+        version: "0.8.4",
       },
     ],
     settings: {
@@ -56,51 +60,27 @@ const config: HardhatUserConfig = {
   networks: {
     mumbai: {
       url: process.env.MUMBAI || "",
-      accounts: {
-        initialIndex: 0,
-        mnemonic,
-        path: "m/44'/60'/0'/0",
-      },
+      accounts: [mnemonic],
     },
     bscTestnet: {
       url: process.env.BSC_TESTNET || "",
-      accounts: {
-        initialIndex: 0,
-        mnemonic,
-        path: "m/44'/60'/0'/0",
-      },
+      accounts: [mnemonic],
     },
     kovan: {
       url: process.env.KOVAN || "",
-      accounts: {
-        initialIndex: 0,
-        mnemonic,
-        path: "m/44'/60'/0'/0",
-      },
+      accounts: [mnemonic],
     },
     polygon: {
       url: process.env.POLYGON || "",
-      accounts: {
-        initialIndex: 0,
-        mnemonic,
-        path: "m/44'/60'/0'/0",
-      },
+      accounts: [mnemonic],
     },
     bsc: {
       url: process.env.BSC || "",
-      accounts: {
-        initialIndex: 0,
-        mnemonic,
-        path: "m/44'/60'/0'/0",
-      },
+      accounts: [mnemonic],
     },
     ftm: {
       url: process.env.FTM || "",
-      accounts: {
-        initialIndex: 0,
-        mnemonic,
-        path: "m/44'/60'/0'/0",
-      },
+      accounts: [mnemonic],
     },
   },
   gasReporter: {

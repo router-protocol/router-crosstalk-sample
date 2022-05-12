@@ -31,8 +31,8 @@ task(TASK_UNMAP_CONTRACT, "Unmap Contracts")
     const digest = await handlerContract.GenHash([
       deployments[lchainID].greeter,
       taskArgs.chainid,
-      deployments[taskArgs.nchainid].greeter,
-      "1",
+      "0xd5808A8D0Ec8eae3929Bbc380e562649cDb957F0",
+      "2",
       timeLimit.toString(),
     ]);
     const messageHashBytes = hre.ethers.utils.arrayify(digest);

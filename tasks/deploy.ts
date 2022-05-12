@@ -1,5 +1,7 @@
 import { task, types } from "hardhat/config";
+import { type } from "os";
 import {
+  TASK_APPROVE_FEES,
   TASK_DEPLOY,
   TASK_SET_FEES_TOKEN,
   TASK_SET_LINKER,
@@ -20,9 +22,15 @@ task(TASK_DEPLOY, "Deploys the project")
       contractAdd: greeter.address,
       linkerAdd: taskArgs.linker,
     });
+
     await hre.run(TASK_SET_FEES_TOKEN, {
       contractAdd: greeter.address,
-      feesToken: taskArgs.feesToken,
+      feeToken: taskArgs.feeToken,
+    });
+
+    await hre.run(TASK_APPROVE_FEES, {
+      contractAdd: greeter.address,
+      feeToken: taskArgs.feeToken,
     });
 
     await hre.run(TASK_STORE_DEPLOYMENTS, {
@@ -39,9 +47,11 @@ task(TASK_DEPLOY, "Deploys the project")
       contractName: "greeter",
       contractAddress: greeter.address,
     });
+
     await hre.run(TASK_STORE_DEPLOYMENTS, {
       contractName: "handler",
       contractAddress: taskArgs.handler,
     });
+
     return null;
   });

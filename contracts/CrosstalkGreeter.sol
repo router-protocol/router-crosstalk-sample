@@ -1,8 +1,8 @@
-//SPDX-License-Identifier: Unlicense
+//SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
 import "hardhat/console.sol";
-import "@routerprotocol/router-sdk/contracts/nonupgradeable/RouterCrossTalk.sol";
+import "@routerprotocol/router-crosstalk/contracts/nonupgradeable/RouterCrossTalk.sol";
 
 contract Greeter is RouterCrossTalk {
     string private greeting;

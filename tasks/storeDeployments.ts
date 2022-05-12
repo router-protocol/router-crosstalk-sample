@@ -25,7 +25,7 @@ task(TASK_STORE_DEPLOYMENTS, "store deployments")
     }
 
     fs.writeSync(
-      fs.openSync("./deployments/deployment.json", "w"),
+      fs.openSync("./deployments/deployments.json", "w"),
       JSON.stringify(deployedContracts, null, 2)
     );
     return null;
