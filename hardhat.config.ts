@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import * as dotenv from "dotenv";
 
 import { HardhatUserConfig, task } from "hardhat/config";
@@ -52,34 +53,22 @@ const config: HardhatUserConfig = {
       // https://hardhat.org/hardhat-network/#solidity-optimizer-support
       optimizer: {
         enabled: true,
-        runs: 25,
+        runs: 200,
       },
     },
   },
   //  defaultNetwork: "kovan",
   networks: {
-    mumbai: {
-      url: process.env.MUMBAI || "",
-      accounts: [mnemonic],
-    },
-    bscTestnet: {
-      url: process.env.BSC_TESTNET || "",
-      accounts: [mnemonic],
-    },
-    kovan: {
-      url: process.env.KOVAN || "",
-      accounts: [mnemonic],
-    },
     polygon: {
-      url: process.env.POLYGON || "",
+      url: process.env.MATIC_RPC || "",
       accounts: [mnemonic],
     },
     bsc: {
-      url: process.env.BSC || "",
+      url: process.env.BSC_RPC || "",
       accounts: [mnemonic],
     },
     ftm: {
-      url: process.env.FTM || "",
+      url: process.env.FTM_RPC || "",
       accounts: [mnemonic],
     },
   },
@@ -89,11 +78,10 @@ const config: HardhatUserConfig = {
   },
   etherscan: {
     apiKey: {
-      kovan: process.env.ETHERSCAN,
-      polygon: process.env.POLYGONSCAN,
-      polygonMumbai: process.env.POLYGONSCAN,
-      bsc: process.env.BSCSCAN,
-      opera: process.env.FTMSCAN,
+      polygon: process.env.POLYGON_KEY,
+      polygonMumbai: process.env.POLYGON_KEY,
+      bsc: process.env.BSC_KEY,
+      opera: process.env.FTMSCAN_KEY,
     },
   },
 };

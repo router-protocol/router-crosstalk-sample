@@ -35,14 +35,14 @@ contract Greeter is RouterCrossTalk {
         setFeeToken(_feeToken);
     }
 
-    function setGreetingCrossChain(uint8 _chainID, string memory _greeting)
-        external
-        onlyOwner
-        returns (bool)
-    {
+    function setGreetingCrossChain(
+        uint8 _chainID,
+        string memory _greeting,
+        uint256 _crossChainGas
+    ) external onlyOwner returns (bool) {
         bytes memory data = abi.encode(_greeting);
         bytes4 _selector = bytes4(keccak256("setGreeting(string)"));
-        bool success = routerSend(_chainID, _selector, data, 100000);
+        bool success = routerSend(_chainID, _selector, data, _crossChainGas);
         return success;
     }
 

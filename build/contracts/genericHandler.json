@@ -109,43 +109,12 @@
             "internalType": "address",
             "name": "_linkedContract",
             "type": "address"
-          },
-          { "internalType": "uint8", "name": "linkerType", "type": "uint8" },
-          { "internalType": "uint256", "name": "timelimit", "type": "uint256" }
+          }
         ],
         "internalType": "struct GenericHandlerUpgradeable.RouterLinker",
         "name": "linker",
         "type": "tuple"
       }
-    ],
-    "name": "GenHash",
-    "outputs": [{ "internalType": "bytes32", "name": "", "type": "bytes32" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "components": [
-          {
-            "internalType": "address",
-            "name": "_rSyncContract",
-            "type": "address"
-          },
-          { "internalType": "uint8", "name": "_chainID", "type": "uint8" },
-          {
-            "internalType": "address",
-            "name": "_linkedContract",
-            "type": "address"
-          },
-          { "internalType": "uint8", "name": "linkerType", "type": "uint8" },
-          { "internalType": "uint256", "name": "timelimit", "type": "uint256" }
-        ],
-        "internalType": "struct GenericHandlerUpgradeable.RouterLinker",
-        "name": "linker",
-        "type": "tuple"
-      },
-      { "internalType": "bytes", "name": "_sign", "type": "bytes" }
     ],
     "name": "MapContract",
     "outputs": [],
@@ -166,19 +135,25 @@
             "internalType": "address",
             "name": "_linkedContract",
             "type": "address"
-          },
-          { "internalType": "uint8", "name": "linkerType", "type": "uint8" },
-          { "internalType": "uint256", "name": "timelimit", "type": "uint256" }
+          }
         ],
         "internalType": "struct GenericHandlerUpgradeable.RouterLinker",
         "name": "linker",
         "type": "tuple"
-      },
-      { "internalType": "bytes", "name": "_sign", "type": "bytes" }
+      }
     ],
     "name": "UnMapContract",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "bridge",
+    "outputs": [
+      { "internalType": "contract iGBridge", "name": "", "type": "address" }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -209,7 +184,16 @@
   },
   {
     "inputs": [
-      { "internalType": "uint8", "name": "_srcChainID", "type": "uint8" },
+      { "internalType": "uint8", "name": "_chainID", "type": "uint8" }
+    ],
+    "name": "fetchDefaultGas",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint8", "name": "_ChainID", "type": "uint8" },
       { "internalType": "uint64", "name": "_nonce", "type": "uint64" }
     ],
     "name": "fetchDepositRecord",
@@ -238,10 +222,30 @@
           { "internalType": "bytes", "name": "data", "type": "bytes" },
           { "internalType": "bytes32", "name": "hash", "type": "bytes32" },
           { "internalType": "uint256", "name": "_gas", "type": "uint256" },
-          { "internalType": "address", "name": "_feeToken", "type": "address" },
-          { "internalType": "bytes", "name": "_callback", "type": "bytes" }
+          { "internalType": "address", "name": "_feeToken", "type": "address" }
         ],
         "internalType": "struct GenericHandlerUpgradeable.DepositRecord",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint8", "name": "_ChainID", "type": "uint8" },
+      { "internalType": "uint64", "name": "_nonce", "type": "uint64" }
+    ],
+    "name": "fetchExecuteRecord",
+    "outputs": [
+      {
+        "components": [
+          { "internalType": "bool", "name": "isExecuted", "type": "bool" },
+          { "internalType": "bool", "name": "_status", "type": "bool" },
+          { "internalType": "bytes", "name": "_callback", "type": "bytes" }
+        ],
+        "internalType": "struct GenericHandlerUpgradeable.ExecuteRecord",
         "name": "",
         "type": "tuple"
       }
@@ -338,6 +342,25 @@
   },
   {
     "inputs": [
+      { "internalType": "address", "name": "_bridge", "type": "address" }
+    ],
+    "name": "setBridge",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint8", "name": "_chainID", "type": "uint8" },
+      { "internalType": "uint256", "name": "_defaultGas", "type": "uint256" }
+    ],
+    "name": "setDefaultGas",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
       { "internalType": "address", "name": "_feeManager", "type": "address" }
     ],
     "name": "setFeeManager",
@@ -372,35 +395,6 @@
     ],
     "name": "supportsInterface",
     "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "components": [
-          {
-            "internalType": "address",
-            "name": "_rSyncContract",
-            "type": "address"
-          },
-          { "internalType": "uint8", "name": "_chainID", "type": "uint8" },
-          {
-            "internalType": "address",
-            "name": "_linkedContract",
-            "type": "address"
-          },
-          { "internalType": "uint8", "name": "linkerType", "type": "uint8" },
-          { "internalType": "uint256", "name": "timelimit", "type": "uint256" }
-        ],
-        "internalType": "struct GenericHandlerUpgradeable.RouterLinker",
-        "name": "voucher",
-        "type": "tuple"
-      },
-      { "internalType": "bytes", "name": "signature", "type": "bytes" }
-    ],
-    "name": "verifySignature",
-    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
     "stateMutability": "view",
     "type": "function"
   },
