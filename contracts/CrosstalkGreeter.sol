@@ -8,6 +8,8 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 contract Greeter is RouterCrossTalk {
     string private greeting;
     address public owner;
+    uint256 public nonce;
+    mapping(uint256 => bytes32) public nonceToHash;
 
     constructor(address _handler) RouterCrossTalk(_handler) {
         owner = msg.sender;
@@ -16,6 +18,10 @@ contract Greeter is RouterCrossTalk {
     modifier onlyOwner() {
         require(msg.sender == owner, "Only owner can call this function");
         _;
+    }
+
+    function _approveFees(address _feeToken, uint256 _value) public {
+        approveFees(_feeToken, _value);
     }
 
     function greet() public view returns (string memory) {
@@ -38,12 +44,34 @@ contract Greeter is RouterCrossTalk {
     function setGreetingCrossChain(
         uint8 _chainID,
         string memory _greeting,
-        uint256 _crossChainGas
+        uint256 _crossChainGasLimit,
+        uint256 _crossChainGasPrice
     ) external onlyOwner returns (bool) {
+        nonce = nonce + 1;
         bytes memory data = abi.encode(_greeting);
         bytes4 _selector = bytes4(keccak256("setGreeting(string)"));
-        bool success = routerSend(_chainID, _selector, data, _crossChainGas);
+        (bool success, bytes32 hash) = routerSend(
+            _chainID,
+            _selector,
+            data,
+            _crossChainGasLimit,
+            _crossChainGasPrice
+        );
+        nonceToHash[nonce] = hash;
+        require(success == true, "unsuccessful");
         return success;
+    }
+
+    function replaySetGreetingCrossChain(
+        uint256 _nonce,
+        uint256 _crossChainGasLimit,
+        uint256 _crossChainGasPrice
+    ) external onlyOwner {
+        routerReplay(
+            nonceToHash[_nonce],
+            _crossChainGasLimit,
+            _crossChainGasPrice
+        );
     }
 
     function _routerSyncHandler(bytes4 _selector, bytes memory _data)

@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 export const TASK_DEPLOY = "DEPLOY";
 export const TASK_SET_LINKER = "SET_LINKER";
 export const TASK_SET_FEES_TOKEN = "SET_FEES_TOKEN";
