@@ -10,29 +10,30 @@ import {
 } from "./task-names";
 
 task(TASK_DEPLOY, "Deploys the project")
+  .addParam("uri", "uri of erc1155", "", types.string)
   .addParam("handler", "address of handler", "", types.string)
   .addParam("linker", "address of linker", "", types.string)
   .addParam("feeToken", "address of fee token", "", types.string)
   .setAction(async (taskArgs, hre): Promise<null> => {
-    const contract = await hre.ethers.getContractFactory("Greeter");
-    const greeter = await contract.deploy(taskArgs.handler);
-    await greeter.deployed();
-    console.log(`Greeter deployed to: `, greeter.address);
+    const contract = await hre.ethers.getContractFactory("CERC1155");
+    const CERC1155 = await contract.deploy(taskArgs.uri, taskArgs.handler);
+    await CERC1155.deployed();
+    console.log(`CERC1155 deployed to: `, CERC1155.address);
 
     await hre.run(TASK_SET_LINKER, {
-      contractAdd: greeter.address,
+      contractAdd: CERC1155.address,
       linkerAdd: taskArgs.linker,
     });
 
     await hre.run(TASK_SET_FEES_TOKEN, {
-      contractAdd: greeter.address,
+      contractAdd: CERC1155.address,
       feeToken: taskArgs.feeToken,
     });
 
-    await hre.run(TASK_APPROVE_FEES, {
-      contractAdd: greeter.address,
-      feeToken: taskArgs.feeToken,
-    });
+    // await hre.run(TASK_APPROVE_FEES, {
+    //   contractAdd: CERC1155.address,
+    //   feeToken: taskArgs.feeToken,
+    // });
 
     await hre.run(TASK_STORE_DEPLOYMENTS, {
       contractName: "linker",
@@ -45,8 +46,8 @@ task(TASK_DEPLOY, "Deploys the project")
     });
 
     await hre.run(TASK_STORE_DEPLOYMENTS, {
-      contractName: "greeter",
-      contractAddress: greeter.address,
+      contractName: "CERC1155",
+      contractAddress: CERC1155.address,
     });
 
     await hre.run(TASK_STORE_DEPLOYMENTS, {

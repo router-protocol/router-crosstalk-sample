@@ -10,9 +10,9 @@ task(TASK_SET_LINKER, "Sets the linker address")
   )
   .addParam("linkerAdd", "address of the linker", "", types.string)
   .setAction(async (taskArgs, hre): Promise<null> => {
-    const contract = await hre.ethers.getContractFactory("Greeter");
-    const greeter = await contract.attach(taskArgs.contractAdd);
-    await greeter.setLinker(taskArgs.linkerAdd);
+    const contract = await hre.ethers.getContractFactory("CERC1155");
+    const CERC1155 = await contract.attach(taskArgs.contractAdd);
+    await CERC1155.setLinker(taskArgs.linkerAdd);
     console.log(`Linker address set`);
     return null;
   });

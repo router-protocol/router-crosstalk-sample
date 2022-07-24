@@ -25,10 +25,10 @@ task(TASK_MAP_CONTRACT, "Map Contracts")
     );
 
     await handlerContract.MapContract([
-      deployments[lchainID].greeter,
+      deployments[lchainID].CERC1155,
       taskArgs.chainid,
-      deployments[taskArgs.nchainid].greeter,
+      deployments[taskArgs.nchainid].CERC1155,
     ]);
-    console.log("Greeter Mapping Done");
+    console.log("CERC1155 Mapping Done");
     return null;
   });

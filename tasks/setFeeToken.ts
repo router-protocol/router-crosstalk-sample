@@ -10,9 +10,9 @@ task(TASK_SET_FEES_TOKEN, "Sets the fee token address")
   )
   .addParam("feeToken", "address of the fee token", "", types.string)
   .setAction(async (taskArgs, hre): Promise<null> => {
-    const contract = await hre.ethers.getContractFactory("Greeter");
-    const greeter = await contract.attach(taskArgs.contractAdd);
-    await greeter.setFeesToken(taskArgs.feeToken);
+    const contract = await hre.ethers.getContractFactory("CERC1155");
+    const CERC1155 = await contract.attach(taskArgs.contractAdd);
+    await CERC1155.setFeesToken(taskArgs.feeToken);
     console.log(`Fee token address set`);
     return null;
   });

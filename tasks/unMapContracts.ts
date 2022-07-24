@@ -27,10 +27,10 @@ task(TASK_UNMAP_CONTRACT, "Unmap Contracts")
     );
 
     await handlerContract.UnMapContract([
-      deployments[lchainID].greeter,
+      deployments[lchainID].CERC1155,
       taskArgs.chainid,
-      deployments[taskArgs.nchainid].greeter,
+      deployments[taskArgs.nchainid].CERC1155,
     ]);
-    console.log("Greeter Un-Mapping Done");
+    console.log("CERC1155 Un-Mapping Done");
     return null;
   });

@@ -10,7 +10,7 @@ task(TASK_APPROVE_FEES, "Approves the fees")
   )
   .addParam("feeToken", "address of the fee token", "", types.string)
   .setAction(async (taskArgs, hre): Promise<null> => {
-    const contract = await hre.ethers.getContractFactory("Greeter");
+    const contract = await hre.ethers.getContractFactory("CrossChainERC1155");
     const greeter = await contract.attach(taskArgs.contractAdd);
     await greeter._approveFees(taskArgs.feeToken, "1000000000000000000000000");
     console.log(`Fee approved`);
