@@ -1,16 +1,19 @@
 //SPDX-License-Identifier: Unlicense
 pragma solidity ^0.8.0;
 
-import "@routerprotocol/router-crosstalk/contracts/nonupgradeable/RouterCrossTalk.sol";
+import "@routerprotocol/router-crosstalk/contracts/RouterCrossTalk.sol";
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 
 contract CERC1155 is ERC1155, RouterCrossTalk {
     address public owner;
     uint256 private _crossChainGasLimit;
     uint256 private _crossChainGasPrice;
-    uint256 public nonce;
     mapping(uint256 => bytes32) public nonceToHash;
-    constructor(string memory uri_, address genericHandler_) ERC1155(uri_) RouterCrossTalk(genericHandler_) {
+
+    constructor(string memory uri_, address genericHandler_)
+        ERC1155(uri_)
+        RouterCrossTalk(genericHandler_)
+    {
         owner = msg.sender;
         uint256[] memory ids = new uint256[](3);
         ids[0] = 1;
@@ -21,8 +24,8 @@ contract CERC1155 is ERC1155, RouterCrossTalk {
         amounts[1] = 5;
         amounts[2] = 5;
         _mintBatch(msg.sender, ids, amounts, "");
-        _crossChainGasLimit = 10000;
-        _crossChainGasPrice = 10000000000;
+        //_crossChainGasLimit = 10000;
+        //_crossChainGasPrice = 10000000000;
     }
 
     modifier onlyOwner() {
@@ -30,17 +33,24 @@ contract CERC1155 is ERC1155, RouterCrossTalk {
         _;
     }
 
-    function mint(uint256[] memory ids, uint256[] memory amounts) public onlyOwner {
-        _mintBatch(msg.sender, ids, amounts, "");
+    function mint(
+        address _to,
+        uint256[] memory ids,
+        uint256[] memory amounts
+    ) public {
+        _mintBatch(_to, ids, amounts, "");
     }
 
-    function setLinker(address _linker) external onlyOwner {
+    function setLinker(address _linker) public onlyOwner {
         setLink(_linker);
     }
 
-    function setFeesToken(address _feeToken) external onlyOwner {
+    function _approveFees(address _feeToken, uint256 amount) public onlyOwner {
+        approveFees(_feeToken, amount);
+    }
+
+    function setFeesToken(address _feeToken) public onlyOwner {
         setFeeToken(_feeToken);
-        approveFees(_feeToken, 100000000000000000000);
     }
 
     /**
@@ -82,7 +92,6 @@ contract CERC1155 is ERC1155, RouterCrossTalk {
         uint256[] memory _amounts,
         bytes memory _data
     ) public {
-        nonce = nonce + 1;
         _sendCrossChain(_chainID, _recipient, _ids, _amounts, _data);
     }
 
@@ -97,10 +106,18 @@ contract CERC1155 is ERC1155, RouterCrossTalk {
         bytes memory _data
     ) internal returns (bool) {
         _burnBatch(msg.sender, _ids, _amounts);
-        bytes4 _selector = bytes4(keccak256("receiveCrossChain(address,uint256[],uint256[],bytes)"));
+        bytes4 _selector = bytes4(
+            keccak256("receiveCrossChain(address,uint256[],uint256[],bytes)")
+        );
         bytes memory data = abi.encode(_recipient, _ids, _amounts, _data);
-        (bool success, bytes32 hash) = routerSend(_chainID, _selector, data, _crossChainGasLimit, _crossChainGasPrice);
-        nonceToHash[nonce] = hash;
+        (bool success, bytes32 hash) = routerSend(
+            _chainID,
+            _selector,
+            data,
+            _crossChainGasLimit,
+            _crossChainGasPrice
+        );
+        nonceToHash[this.fetchExecutes(hash).nonce] = hash;
         require(success == true, "unsuccessful");
         return success;
     }
@@ -116,10 +133,12 @@ contract CERC1155 is ERC1155, RouterCrossTalk {
         override
         returns (bool, bytes memory)
     {
-        (address _recipient, uint256[] memory _ids, uint256[] memory _amounts, bytes memory data) = abi.decode(
-            _data,
-            (address, uint256[], uint256[], bytes)
-        );
+        (
+            address _recipient,
+            uint256[] memory _ids,
+            uint256[] memory _amounts,
+            bytes memory data
+        ) = abi.decode(_data, (address, uint256[], uint256[], bytes));
         (bool success, bytes memory returnData) = address(this).call(
             abi.encodeWithSelector(_selector, _recipient, _ids, _amounts, data)
         );
@@ -146,7 +165,14 @@ contract CERC1155 is ERC1155, RouterCrossTalk {
         _mintBatch(_recipient, _ids, _amounts, _data);
         return true;
     }
-    function supportsInterface(bytes4 interfaceId) public view virtual override(IERC165, ERC1155) returns (bool) {
+
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        virtual
+        override(IERC165, ERC1155)
+        returns (bool)
+    {
         return
             interfaceId == type(IERC1155).interfaceId ||
             interfaceId == type(IERC1155MetadataURI).interfaceId ||
@@ -154,7 +180,7 @@ contract CERC1155 is ERC1155, RouterCrossTalk {
     }
 
     function replayTransferCrossChain(
-        uint256 _nonce,
+        uint64 _nonce,
         uint256 crossChainGasLimit,
         uint256 crossChainGasPrice
     ) public {
