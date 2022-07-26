@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import hre from "hardhat";
 
-describe("Testing Bridge Contract", function () {
+describe("Testing ERC-1155 Open zeppelin Contract", function () {
   beforeEach(async function () {
     this.hre = hre;
     this.accounts = await this.hre.ethers.getSigners();
@@ -14,32 +14,40 @@ describe("Testing Bridge Contract", function () {
     this.bridgeInstance = await this.bridge.deploy();
     await this.bridgeInstance.deployed();
 
-    this.CERC1155 = await this.hre.ethers.getContractFactory("CERC1155");
-    this.CERC1155Instance = await this.CERC1155.deploy(
+    this.MyCrossChainERC1155 = await this.hre.ethers.getContractFactory(
+      "MyCrossChainERC1155"
+    );
+    this.MyCrossChainERC1155Instance = await this.MyCrossChainERC1155.deploy(
       "abcd.xyz",
       this.bridgeInstance.address
     );
-    await this.CERC1155Instance.deployed();
+    await this.MyCrossChainERC1155Instance.deployed();
 
-    await this.CERC1155Instance.mint(this.tester2, [1, 2, 3], [10, 11, 12]);
+    await this.MyCrossChainERC1155Instance.mint(
+      this.tester2,
+      [1, 2, 3],
+      [10, 11, 12]
+    );
 
     this.network = await this.hre.ethers.provider.getNetwork();
 
     await this.bridgeInstance.linkContract(
-      this.CERC1155Instance.address,
+      this.MyCrossChainERC1155Instance.address,
       111,
-      this.CERC1155Instance.address
+      this.MyCrossChainERC1155Instance.address
     );
   });
 
   it("Router Crosstalk - Checking transferCrossChain Function", async function () {
-    await this.CERC1155Instance._setCrossChainGasLimit(10000);
-    await this.CERC1155Instance._setCrossChainGasPrice(100000000000);
-    let gaslimit = await this.CERC1155Instance.fetchCrossChainGasLimit();
-    let gasprice = await this.CERC1155Instance.fetchCrossChainGasPrice();
+    await this.MyCrossChainERC1155Instance.setCrossChainGasLimit(10000);
+    await this.MyCrossChainERC1155Instance.setCrossChainGasPrice(100000000000);
+    let gaslimit =
+      await this.MyCrossChainERC1155Instance.fetchCrossChainGasLimit();
+    let gasprice =
+      await this.MyCrossChainERC1155Instance.fetchCrossChainGasPrice();
     console.log("GAS LIMIT = " + gaslimit.toString());
     console.log("GAS PRICE = " + gasprice.toString());
-    await this.CERC1155Instance.transferCrossChain(
+    await this.MyCrossChainERC1155Instance.transferCrossChain(
       111,
       this.tester2,
       [1, 2, 3],
@@ -47,19 +55,21 @@ describe("Testing Bridge Contract", function () {
       "0x00"
     );
     let Logs1 = await this.bridgeInstance.queryFilter("deposit");
-    let Logs2 = await this.CERC1155Instance.queryFilter("CrossTalkSend");
+    let Logs2 = await this.MyCrossChainERC1155Instance.queryFilter(
+      "CrossTalkSend"
+    );
     await this.bridgeInstance.execute(
-      this.CERC1155Instance.address,
+      this.MyCrossChainERC1155Instance.address,
       Logs2[0].args.sourceChain,
-      this.CERC1155Instance.address,
+      this.MyCrossChainERC1155Instance.address,
       Logs1[0].args._data,
       Logs2[0].args._hash
     );
-    let balanceTester1 = await this.CERC1155Instance.balanceOfBatch(
+    let balanceTester1 = await this.MyCrossChainERC1155Instance.balanceOfBatch(
       [this.tester1, this.tester1, this.tester1],
       [1, 2, 3]
     );
-    let balanceTester2 = await this.CERC1155Instance.balanceOfBatch(
+    let balanceTester2 = await this.MyCrossChainERC1155Instance.balanceOfBatch(
       [this.tester2, this.tester2, this.tester2],
       [1, 2, 3]
     );
@@ -71,26 +81,30 @@ describe("Testing Bridge Contract", function () {
   });
 
   it("Router Crosstalk - Checking Replay Event", async function () {
-    await this.CERC1155Instance._setCrossChainGasLimit(10000);
-    await this.CERC1155Instance._setCrossChainGasPrice(100000000000);
-    let gaslimit = await this.CERC1155Instance.fetchCrossChainGasLimit();
-    let gasprice = await this.CERC1155Instance.fetchCrossChainGasPrice();
+    await this.MyCrossChainERC1155Instance.setCrossChainGasLimit(10000);
+    await this.MyCrossChainERC1155Instance.setCrossChainGasPrice(100000000000);
+    let gaslimit =
+      await this.MyCrossChainERC1155Instance.fetchCrossChainGasLimit();
+    let gasprice =
+      await this.MyCrossChainERC1155Instance.fetchCrossChainGasPrice();
     console.log("GAS LIMIT = " + gaslimit.toString());
     console.log("GAS PRICE = " + gasprice.toString());
-    await this.CERC1155Instance.transferCrossChain(
+    await this.MyCrossChainERC1155Instance.transferCrossChain(
       111,
       this.tester2,
       [1, 2, 3],
-      [2, 2, 2],
+      [5, 5, 5],
       "0x00"
     );
     let Logs1 = await this.bridgeInstance.queryFilter("deposit");
-    let Logs2 = await this.CERC1155Instance.queryFilter("CrossTalkSend");
-    let executes = await this.CERC1155Instance.fetchExecutes(
+    let Logs2 = await this.MyCrossChainERC1155Instance.queryFilter(
+      "CrossTalkSend"
+    );
+    let executes = await this.MyCrossChainERC1155Instance.fetchExecutes(
       Logs2[0].args._hash
     );
     let nonce = executes.nonce;
-    await this.CERC1155Instance.replayTransferCrossChain(
+    await this.MyCrossChainERC1155Instance.replayTransferCrossChain(
       nonce,
       15000,
       150000000000
@@ -98,24 +112,24 @@ describe("Testing Bridge Contract", function () {
     let Logs3 = await this.bridgeInstance.queryFilter("ReplayEvent");
     console.log(Logs3);
     await this.bridgeInstance.execute(
-      this.CERC1155Instance.address,
+      this.MyCrossChainERC1155Instance.address,
       Logs2[0].args.sourceChain,
-      this.CERC1155Instance.address,
+      this.MyCrossChainERC1155Instance.address,
       Logs1[0].args._data,
       Logs2[0].args._hash
     );
-    let balanceTester1 = await this.CERC1155Instance.balanceOfBatch(
+    let balanceTester1 = await this.MyCrossChainERC1155Instance.balanceOfBatch(
       [this.tester1, this.tester1, this.tester1],
       [1, 2, 3]
     );
-    let balanceTester2 = await this.CERC1155Instance.balanceOfBatch(
+    let balanceTester2 = await this.MyCrossChainERC1155Instance.balanceOfBatch(
       [this.tester2, this.tester2, this.tester2],
       [1, 2, 3]
     );
     console.log("BALANCE OF TESTER 1 " + balanceTester1);
     console.log("BALANCE OF TESTER 2 " + balanceTester2);
-    expect(balanceTester2[0].toString()).to.be.equal("12");
-    expect(balanceTester2[1].toString()).to.be.equal("13");
-    expect(balanceTester2[2].toString()).to.be.equal("14");
+    expect(balanceTester2[0].toString()).to.be.equal("15");
+    expect(balanceTester2[1].toString()).to.be.equal("16");
+    expect(balanceTester2[2].toString()).to.be.equal("17");
   });
 });

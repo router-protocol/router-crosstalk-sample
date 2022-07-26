@@ -57,7 +57,7 @@ contract CERC1155 is ERC1155, RouterCrossTalk {
      * @notice setCrossChainGasLimit Used to set CrossChainGasLimit, this can only be set by CrossChain Admin or Admins
      * @param _gasLimit Amount of gasLimit that is to be set
      */
-    function _setCrossChainGasLimit(uint256 _gasLimit) public onlyOwner {
+    function setCrossChainGasLimit(uint256 _gasLimit) public onlyOwner {
         _crossChainGasLimit = _gasLimit;
     }
 
@@ -73,7 +73,7 @@ contract CERC1155 is ERC1155, RouterCrossTalk {
      * @notice setCrossChainGasPrice Used to set CrossChainGasPrice, this can only be set by CrossChain Admin or Admins
      * @param _gasPrice Amount of gasPrice that is to be set
      */
-    function _setCrossChainGasPrice(uint256 _gasPrice) external onlyOwner {
+    function setCrossChainGasPrice(uint256 _gasPrice) public onlyOwner {
         _crossChainGasPrice = _gasPrice;
     }
 
