@@ -3,6 +3,7 @@
 pragma solidity ^0.8.0;
 
 import "./ERC1155/CrossChainERC1155.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract MyCrossChainERC1155 is CrossChainERC1155 {
     address public owner;
@@ -67,6 +68,12 @@ contract MyCrossChainERC1155 is CrossChainERC1155 {
         bytes memory _data
     ) external {
         _sendCrossChain(_chainID, _recipient, _ids, _amounts, _data);
+    }
+
+    function recoverFeeTokens() external onlyOwner {
+        address feeToken = this.fetchFeetToken();
+        uint256 amount = IERC20(feeToken).balanceOf(address(this));
+        IERC20(feeToken).transfer(owner, amount);
     }
 
     function supportsInterface(bytes4 interfaceId)

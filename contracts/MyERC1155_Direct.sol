@@ -3,6 +3,7 @@ pragma solidity ^0.8.0;
 
 import "@routerprotocol/router-crosstalk/contracts/RouterCrossTalk.sol";
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract CERC1155 is ERC1155, RouterCrossTalk {
     address public owner;
@@ -164,6 +165,12 @@ contract CERC1155 is ERC1155, RouterCrossTalk {
     ) external isSelf returns (bool) {
         _mintBatch(_recipient, _ids, _amounts, _data);
         return true;
+    }
+
+    function recoverFeeTokens() external onlyOwner {
+        address feeToken = this.fetchFeetToken();
+        uint256 amount = IERC20(feeToken).balanceOf(address(this));
+        IERC20(feeToken).transfer(owner, amount);
     }
 
     function supportsInterface(bytes4 interfaceId)
