@@ -4,6 +4,37 @@
     "inputs": [
       {
         "indexed": true,
+        "internalType": "uint8",
+        "name": "destinationChainID",
+        "type": "uint8"
+      },
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "resourceID",
+        "type": "bytes32"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint64",
+        "name": "depositNonce",
+        "type": "uint64"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "widgetID",
+        "type": "uint256"
+      }
+    ],
+    "name": "ReplayEvent",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
         "internalType": "bytes32",
         "name": "role",
         "type": "bytes32"
@@ -168,7 +199,8 @@
         "name": "feeTokenAddress",
         "type": "address"
       },
-      { "internalType": "uint256", "name": "gas", "type": "uint256" }
+      { "internalType": "uint256", "name": "gasLimit", "type": "uint256" },
+      { "internalType": "uint256", "name": "gasPrice", "type": "uint256" }
     ],
     "name": "calculateFees",
     "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
@@ -184,15 +216,6 @@
   },
   {
     "inputs": [
-      { "internalType": "uint8", "name": "_chainID", "type": "uint8" }
-    ],
-    "name": "fetchDefaultGas",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
       { "internalType": "uint8", "name": "_ChainID", "type": "uint8" },
       { "internalType": "uint64", "name": "_nonce", "type": "uint64" }
     ],
@@ -200,11 +223,6 @@
     "outputs": [
       {
         "components": [
-          {
-            "internalType": "bytes32",
-            "name": "_resourceID",
-            "type": "bytes32"
-          },
           { "internalType": "uint8", "name": "_srcChainID", "type": "uint8" },
           { "internalType": "uint8", "name": "_destChainID", "type": "uint8" },
           { "internalType": "uint64", "name": "_nonce", "type": "uint64" },
@@ -218,11 +236,12 @@
             "name": "_destAddress",
             "type": "address"
           },
-          { "internalType": "bytes4", "name": "_selector", "type": "bytes4" },
           { "internalType": "bytes", "name": "data", "type": "bytes" },
           { "internalType": "bytes32", "name": "hash", "type": "bytes32" },
-          { "internalType": "uint256", "name": "_gas", "type": "uint256" },
-          { "internalType": "address", "name": "_feeToken", "type": "address" }
+          { "internalType": "uint256", "name": "_gasLimit", "type": "uint256" },
+          { "internalType": "uint256", "name": "_gasPrice", "type": "uint256" },
+          { "internalType": "address", "name": "_feeToken", "type": "address" },
+          { "internalType": "uint256", "name": "_fees", "type": "uint256" }
         ],
         "internalType": "struct GenericHandlerUpgradeable.DepositRecord",
         "name": "",
@@ -268,16 +287,23 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "fetch_resourceID",
+    "outputs": [{ "internalType": "bytes32", "name": "", "type": "bytes32" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       { "internalType": "uint8", "name": "_destChainID", "type": "uint8" },
-      { "internalType": "bytes4", "name": "_selector", "type": "bytes4" },
       { "internalType": "bytes", "name": "_data", "type": "bytes" },
       { "internalType": "bytes32", "name": "hash", "type": "bytes32" },
-      { "internalType": "uint256", "name": "_gas", "type": "uint256" },
+      { "internalType": "uint256", "name": "_gasLimit", "type": "uint256" },
+      { "internalType": "uint256", "name": "_gasPrice", "type": "uint256" },
       { "internalType": "address", "name": "_feeToken", "type": "address" }
     ],
     "name": "genericDeposit",
-    "outputs": [],
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -332,6 +358,18 @@
   },
   {
     "inputs": [
+      { "internalType": "uint8", "name": "_destChainID", "type": "uint8" },
+      { "internalType": "uint64", "name": "_depositNonce", "type": "uint64" },
+      { "internalType": "uint256", "name": "_gasLimit", "type": "uint256" },
+      { "internalType": "uint256", "name": "_gasPrice", "type": "uint256" }
+    ],
+    "name": "replayGenericDeposit",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
       { "internalType": "bytes32", "name": "role", "type": "bytes32" },
       { "internalType": "address", "name": "account", "type": "address" }
     ],
@@ -345,16 +383,6 @@
       { "internalType": "address", "name": "_bridge", "type": "address" }
     ],
     "name": "setBridge",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      { "internalType": "uint8", "name": "_chainID", "type": "uint8" },
-      { "internalType": "uint256", "name": "_defaultGas", "type": "uint256" }
-    ],
-    "name": "setDefaultGas",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -382,6 +410,17 @@
       },
       { "internalType": "uint256", "name": "feeFactor", "type": "uint256" },
       { "internalType": "uint256", "name": "bridgeFee", "type": "uint256" },
+      {
+        "internalType": "uint256",
+        "name": "defaultGasLimit",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "defaultGasPrice",
+        "type": "uint256"
+      },
+      { "internalType": "uint8", "name": "decimals", "type": "uint8" },
       { "internalType": "bool", "name": "accepted", "type": "bool" }
     ],
     "name": "setFees",

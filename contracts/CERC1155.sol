@@ -1,49 +1,56 @@
-// SPDX-License-Identifier: MIT
-
+//SPDX-License-Identifier: Unlicense
 pragma solidity ^0.8.0;
 
-import "./ICrossChainERC1155.sol";
-import "./extensions/ICrossChainERC1155MetadataURI.sol";
-import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@routerprotocol/router-crosstalk/contracts/RouterCrossTalk.sol";
+import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-/**
- * @dev Implementation of Router CrossTalk in the basic standard multi-token ERC-1155.
- *
- * TIP: For a detailed overview see our guide
- * https://dev.routerprotocol.com/crosstalk-library/overview
- */
-contract CrossChainERC1155 is ERC1155, ICrossChainERC1155, RouterCrossTalk {
+contract CERC1155 is ERC1155, RouterCrossTalk {
+    address public owner;
     uint256 private _crossChainGasLimit;
-    uint256 private _crossChainGasPrice;
-    mapping(uint256 => bytes32) public nonceToHash;
 
     constructor(string memory uri_, address genericHandler_)
         ERC1155(uri_)
         RouterCrossTalk(genericHandler_)
-    {}
-
-    /**
-     * @dev See {IERC165-supportsInterface}.
-     */
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        virtual
-        override(IERC165, ERC1155)
-        returns (bool)
     {
-        return
-            interfaceId == type(ICrossChainERC1155).interfaceId ||
-            interfaceId == type(ICrossChainERC1155MetadataURI).interfaceId ||
-            super.supportsInterface(interfaceId);
+        owner = msg.sender;
+        uint256[] memory ids = new uint256[](3);
+        ids[0] = 1;
+        ids[1] = 2;
+        ids[2] = 3;
+        uint256[] memory amounts = new uint256[](3);
+        amounts[0] = 5;
+        amounts[1] = 5;
+        amounts[2] = 5;
+        _mintBatch(msg.sender, ids, amounts, "");
+    }
+
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Only owner can call this function");
+        _;
+    }
+
+    function mint(
+        address _to,
+        uint256[] memory ids,
+        uint256[] memory amounts
+    ) public {
+        _mintBatch(_to, ids, amounts, "");
+    }
+
+    function setLinker(address _linker) public onlyOwner {
+        setLink(_linker);
+    }
+
+    function setFeesToken(address _feeToken) public onlyOwner {
+        setFeeToken(_feeToken);
     }
 
     /**
      * @notice setCrossChainGasLimit Used to set CrossChainGasLimit, this can only be set by CrossChain Admin or Admins
      * @param _gasLimit Amount of gasLimit that is to be set
      */
-    function _setCrossChainGasLimit(uint256 _gasLimit) internal {
+    function setCrossChainGasLimit(uint256 _gasLimit) public onlyOwner {
         _crossChainGasLimit = _gasLimit;
     }
 
@@ -51,41 +58,25 @@ contract CrossChainERC1155 is ERC1155, ICrossChainERC1155, RouterCrossTalk {
      * @notice fetchCrossChainGasLimit Used to fetch CrossChainGasLimit
      * @return crossChainGasLimit that is set
      */
-    function fetchCrossChainGasLimit()
-        external
-        view
-        override
-        returns (uint256)
-    {
+    function fetchCrossChainGasLimit() external view returns (uint256) {
         return _crossChainGasLimit;
     }
 
-    /**
-     * @notice setCrossChainGasPrice Used to set CrossChainGasPrice, this can only be set by CrossChain Admin or Admins
-     * @param _gasPrice Amount of gasPrice that is to be set
-     */
-    function _setCrossChainGasPrice(uint256 _gasPrice) internal {
-        _crossChainGasPrice = _gasPrice;
-    }
-
-    /**
-     * @notice fetchCrossChainGasPrice Used to fetch CrossChainGasPrice
-     * @return crossChainGasPrice that is set
-     */
-    function fetchCrossChainGasPrice()
-        external
-        view
-        override
-        returns (uint256)
-    {
-        return _crossChainGasPrice;
+    function transferCrossChain(
+        uint8 _chainID,
+        address _recipient,
+        uint256[] memory _ids,
+        uint256[] memory _amounts,
+        bytes memory _data
+    ) public {
+        _sendCrossChain(_chainID, _recipient, _ids, _amounts, _data);
     }
 
     /**
      * @notice _sendCrossChain This is an internal function to generate a cross chain communication request
      */
     function _sendCrossChain(
-        uint8 _chainID,
+        uint8 _destChainID,
         address _recipient,
         uint256[] memory _ids,
         uint256[] memory _amounts,
@@ -96,16 +87,13 @@ contract CrossChainERC1155 is ERC1155, ICrossChainERC1155, RouterCrossTalk {
             keccak256("receiveCrossChain(address,uint256[],uint256[],bytes)")
         );
         bytes memory data = abi.encode(_recipient, _ids, _amounts, _data);
-        (bool success, bytes32 hash) = routerSend(
-            _chainID,
+        bool success = routerSend(
+            _destChainID,
             _selector,
             data,
-            _crossChainGasLimit,
-            _crossChainGasPrice
+            _crossChainGasLimit
         );
-        nonceToHash[this.fetchExecutes(hash).nonce] = hash;
-        require(success == true, "unsuccessful");
-        return success;
+        require(success == true, "Unsuccessful");
     }
 
     /**
@@ -152,22 +140,22 @@ contract CrossChainERC1155 is ERC1155, ICrossChainERC1155, RouterCrossTalk {
         return true;
     }
 
-    /**
-     * @notice replayTransferCrossChain Replays the transaction if hindered by insufficient gas
-     *
-     * @param _nonce nonce for the transaction to be replayed
-     * @param crossChainGasLimit Revised Gas Limit
-     * @param crossChainGasPrice Revised Gas Price
-     */
-    function replayTransferCrossChain(
-        uint64 _nonce,
-        uint256 crossChainGasLimit,
-        uint256 crossChainGasPrice
-    ) public {
-        routerReplay(
-            nonceToHash[_nonce],
-            crossChainGasLimit,
-            crossChainGasPrice
-        );
+    function recoverFeeTokens() external onlyOwner {
+        address feeToken = this.fetchFeetToken();
+        uint256 amount = IERC20(feeToken).balanceOf(address(this));
+        IERC20(feeToken).transfer(owner, amount);
+    }
+
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        virtual
+        override(IERC165, ERC1155)
+        returns (bool)
+    {
+        return
+            interfaceId == type(IERC1155).interfaceId ||
+            interfaceId == type(IERC1155MetadataURI).interfaceId ||
+            super.supportsInterface(interfaceId);
     }
 }

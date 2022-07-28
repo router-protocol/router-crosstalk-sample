@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { TASK_SET_FEES_TOKEN } from "./task-names";
 import { task, types } from "hardhat/config";
 

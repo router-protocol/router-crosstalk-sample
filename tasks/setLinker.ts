@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { task, types } from "hardhat/config";
 import { TASK_SET_LINKER } from "./task-names";
 

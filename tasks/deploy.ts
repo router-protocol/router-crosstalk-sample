@@ -30,10 +30,10 @@ task(TASK_DEPLOY, "Deploys the project")
       feeToken: taskArgs.feeToken,
     });
 
-    // await hre.run(TASK_APPROVE_FEES, {
-    //   contractAdd: CERC1155.address,
-    //   feeToken: taskArgs.feeToken,
-    // });
+    await hre.run(TASK_APPROVE_FEES, {
+      contractAdd: CERC1155.address,
+      feeToken: taskArgs.feeToken,
+    });
 
     await hre.run(TASK_STORE_DEPLOYMENTS, {
       contractName: "linker",
