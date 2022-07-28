@@ -14,15 +14,6 @@ contract CERC1155 is ERC1155, RouterCrossTalk {
         RouterCrossTalk(genericHandler_)
     {
         owner = msg.sender;
-        uint256[] memory ids = new uint256[](3);
-        ids[0] = 1;
-        ids[1] = 2;
-        ids[2] = 3;
-        uint256[] memory amounts = new uint256[](3);
-        amounts[0] = 5;
-        amounts[1] = 5;
-        amounts[2] = 5;
-        _mintBatch(msg.sender, ids, amounts, "");
     }
 
     modifier onlyOwner() {
@@ -69,7 +60,14 @@ contract CERC1155 is ERC1155, RouterCrossTalk {
         uint256[] memory _amounts,
         bytes memory _data
     ) public {
-        _sendCrossChain(_chainID, _recipient, _ids, _amounts, _data);
+        bool sent = _sendCrossChain(
+            _chainID,
+            _recipient,
+            _ids,
+            _amounts,
+            _data
+        );
+        require(sent == true, "Unsuccessful");
     }
 
     /**
@@ -93,7 +91,8 @@ contract CERC1155 is ERC1155, RouterCrossTalk {
             data,
             _crossChainGasLimit
         );
-        require(success == true, "Unsuccessful");
+
+        return success;
     }
 
     /**

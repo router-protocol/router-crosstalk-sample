@@ -13,7 +13,7 @@ task(TASK_SET_FEES_TOKEN, "Sets the fee token address")
   .setAction(async (taskArgs, hre): Promise<null> => {
     const contract = await hre.ethers.getContractFactory("CERC1155");
     const CERC1155 = await contract.attach(taskArgs.contractAdd);
-    await CERC1155.setFeesToken(taskArgs.feeToken);
+    await CERC1155.setFeesToken(taskArgs.feeToken, { gasLimit: 100000 });
     console.log(`Fee token address set`);
     return null;
   });
