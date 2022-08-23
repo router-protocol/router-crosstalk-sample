@@ -1,4 +1,7 @@
 /* eslint-disable prettier/prettier */
+/* eslint-disable node/no-unpublished-import */
+/* eslint-disable node/no-missing-import */
+
 import { Contract } from "ethers";
 import { task, types } from "hardhat/config";
 import { TASK_MAP_CONTRACT } from "./task-names";
@@ -16,6 +19,7 @@ task(TASK_MAP_CONTRACT, "Map Contracts")
   .setAction(async (taskArgs, hre): Promise<null> => {
     const deployments = require("../deployments/deployments.json");
     const handlerABI = require("../build/contracts/genericHandler.json");
+
     const network = await hre.ethers.provider.getNetwork();
     const lchainID = network.chainId.toString();
 
@@ -23,6 +27,8 @@ task(TASK_MAP_CONTRACT, "Map Contracts")
       handlerABI,
       deployments[lchainID].handler
     );
+
+    console.log(handlerContract.address);
 
     await handlerContract.MapContract([
       deployments[lchainID].greeter,

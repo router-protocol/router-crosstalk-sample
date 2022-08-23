@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 import "hardhat/console.sol";
-import "@routerprotocol/router-crosstalk/contracts/nonupgradeable/RouterCrossTalk.sol";
+import "@routerprotocol/router-crosstalk/contracts/RouterCrossTalk.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract Greeter is RouterCrossTalk {
@@ -87,7 +87,7 @@ contract Greeter is RouterCrossTalk {
     }
 
     function recoverFeeTokens() external onlyOwner {
-        address feeToken = this.fetchFeetToken();
+        address feeToken = this.fetchFeeToken();
         uint256 amount = IERC20(feeToken).balanceOf(address(this));
         IERC20(feeToken).transfer(owner, amount);
     }
