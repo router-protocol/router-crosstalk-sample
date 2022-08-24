@@ -29,6 +29,7 @@ contract Greeter is RouterCrossTalk {
     }
 
     function setGreeting(string memory _greeting) external isSelf {
+        console.log("Changing greeting from '%s' to '%s'", greeting, _greeting);
         greeting = _greeting;
     }
 
