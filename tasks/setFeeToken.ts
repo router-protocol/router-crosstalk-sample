@@ -15,7 +15,7 @@ task(TASK_SET_FEES_TOKEN, "Sets the fee token address")
   .setAction(async (taskArgs, hre): Promise<null> => {
     const contract = await hre.ethers.getContractFactory("Greeter");
     const greeter = await contract.attach(taskArgs.contractAdd);
-    await greeter.setFeesToken(taskArgs.feeToken, { gasLimit: 1000000 });
+    await greeter.setFeesToken(taskArgs.feeToken, { gasLimit: 2000000 });
     console.log(`Fee token address set`);
     return null;
   });

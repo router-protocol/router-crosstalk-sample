@@ -1,19 +1,15 @@
 /* eslint-disable prettier/prettier */
+/* eslint-disable node/no-missing-import */
 import * as dotenv from "dotenv";
 
 import { HardhatUserConfig, task } from "hardhat/config";
 import "@nomiclabs/hardhat-etherscan";
 import "@nomiclabs/hardhat-waffle";
+import "@nomiclabs/hardhat-ethers";
 import "@typechain/hardhat";
 import "hardhat-gas-reporter";
 import "solidity-coverage";
-import "./tasks/deploy";
-import "./tasks/setLinker";
-import "./tasks/setFeeToken";
-import "./tasks/storeDeployments";
-import "./tasks/mapContracts";
-import "./tasks/unMapContracts";
-import "./tasks/approveFees";
+import "./tasks/index";
 
 dotenv.config();
 

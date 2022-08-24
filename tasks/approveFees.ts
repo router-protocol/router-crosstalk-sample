@@ -16,7 +16,7 @@ task(TASK_APPROVE_FEES, "Approves the fees")
     const contract = await hre.ethers.getContractFactory("Greeter");
     const greeter = await contract.attach(taskArgs.contractAdd);
     await greeter._approveFees(taskArgs.feeToken, "1000000000000000000000000", {
-      gasLimit: 1000000,
+      gasLimit: 2000000,
     });
     console.log(`Fee approved`);
     return null;

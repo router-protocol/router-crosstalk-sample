@@ -1,14 +1,12 @@
 {
   "137": {
-    "handler": "0x85c044F6a3Cd89e3bF97479eA60FdC2cF36Ef1cC",
+    "handler": "0x10BA4774cDBF19f3a4ed652005E0078e021bDF3E",
     "linker": "0xB00BC9e04698A3315B6038225a2E9e42D63C7669",
-    "feeToken": "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270",
-    "greeter": "0xaEF3F8F1b8ca53FCD7191Cb55Fb435e05aE36177"
+    "feeToken": "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270"
   },
   "250": {
-    "handler": "0xfBf330D8a2b8d97DEd8DD1e3600f6FA10F8Ec6f2",
+    "handler": "0x6AfC517BcAC2e0e4BF6bB0F41383732E6359D541",
     "linker": "0xB00BC9e04698A3315B6038225a2E9e42D63C7669",
-    "feeToken": "0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83",
-    "greeter": "0xD0031cdb052C3E44bD78A2c4bE7c491656c1239C"
+    "feeToken": "0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83"
   }
 }

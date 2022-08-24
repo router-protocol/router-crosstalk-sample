@@ -28,13 +28,12 @@ task(TASK_MAP_CONTRACT, "Map Contracts")
       deployments[lchainID].handler
     );
 
-    console.log(handlerContract.address);
-
     await handlerContract.MapContract([
       deployments[lchainID].greeter,
       taskArgs.chainid,
       deployments[taskArgs.nchainid].greeter,
     ]);
+
     console.log("Greeter Mapping Done");
     return null;
   });
