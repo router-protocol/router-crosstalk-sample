@@ -13,6 +13,7 @@ task(TASK_STORE_DEPLOYMENTS, "store deployments")
     const networkID = network.chainId;
 
     const deployedContracts = require("../deployments/deployments.json");
+    // const deployedContracts = require("../deployments/sequencerDeployments.json");
 
     if (typeof deployedContracts[networkID] === "undefined") {
       deployedContracts[networkID] = {};
@@ -23,6 +24,7 @@ task(TASK_STORE_DEPLOYMENTS, "store deployments")
 
     fs.writeFileSync(
       "deployments/deployments.json",
+      // "deployments/sequencerDeployments.json",
       JSON.stringify(deployedContracts)
     );
 

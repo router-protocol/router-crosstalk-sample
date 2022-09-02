@@ -13,6 +13,7 @@ import {
 task(TASK_DEPLOY, "Deploys the project").setAction(
   async (taskArgs, hre): Promise<null> => {
     const deployment = require("../deployments/deployments.json");
+    // const deployment = require("../deployments/sequencerDeployments.json");
 
     const network = await hre.ethers.provider.getNetwork();
     const chainId = network.chainId;
@@ -21,7 +22,7 @@ task(TASK_DEPLOY, "Deploys the project").setAction(
     const feeToken = deployment[chainId].feeToken;
     const linker = deployment[chainId].linker;
 
-    const contract = await hre.ethers.getContractFactory("Greeter");
+    const contract = await hre.ethers.getContractFactory("SequencerGreeter");
 
     const greeter = await contract.deploy(handler);
     await greeter.deployed();

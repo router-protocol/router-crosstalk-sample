@@ -67,6 +67,10 @@ const config: HardhatUserConfig = {
       url: process.env.FTM_RPC || "",
       accounts: [mnemonic],
     },
+    avalanche: {
+      url: "https://api.avax.network/ext/bc/C/rpc",
+      accounts: [mnemonic],
+    },
   },
   gasReporter: {
     enabled: process.env.REPORT_GAS !== undefined,
@@ -76,8 +80,9 @@ const config: HardhatUserConfig = {
     apiKey: {
       polygon: process.env.POLYGON_ETHERSCAN_KEY,
       polygonMumbai: process.env.POLYGON_KEY,
-      bsc: process.env.BSC_KEY,
+      bsc: process.env.BSC_ETHERSCAN_KEY,
       opera: process.env.FTMSCAN_KEY,
+      avalanche: "QAE2JD7XIBCYB6Z6GSKNJIHKZ8XGVYM8AI",
     },
   },
 };

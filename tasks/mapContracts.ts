@@ -17,8 +17,10 @@ task(TASK_MAP_CONTRACT, "Map Contracts")
   )
   .addParam<string>("nchainid", "Remote ChainID", "", types.string)
   .setAction(async (taskArgs, hre): Promise<null> => {
-    const deployments = require("../deployments/deployments.json");
     const handlerABI = require("../build/contracts/genericHandler.json");
+
+    const deployments = require("../deployments/sequencerDeployments.json");
+    // const deployments = require("../deployments/sequencerDeployments.json");
 
     const network = await hre.ethers.provider.getNetwork();
     const lchainID = network.chainId.toString();
