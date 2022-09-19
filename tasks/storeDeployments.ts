@@ -12,8 +12,8 @@ task(TASK_STORE_DEPLOYMENTS, "store deployments")
     const network = await ethers.provider.getNetwork();
     const networkID = network.chainId;
 
-    const deployedContracts = require("../deployments/deployments.json");
-    // const deployedContracts = require("../deployments/sequencerDeployments.json");
+    // const deployedContracts = require("../deployments/deployments.json");
+    const deployedContracts = require("../deployments/sequencerDeployments.json");
 
     if (typeof deployedContracts[networkID] === "undefined") {
       deployedContracts[networkID] = {};
@@ -23,8 +23,8 @@ task(TASK_STORE_DEPLOYMENTS, "store deployments")
       taskArgs.contractAddress;
 
     fs.writeFileSync(
-      "deployments/deployments.json",
-      // "deployments/sequencerDeployments.json",
+      // "deployments/deployments.json",
+      "deployments/sequencerDeployments.json",
       JSON.stringify(deployedContracts)
     );
 

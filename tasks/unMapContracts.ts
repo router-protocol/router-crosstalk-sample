@@ -16,14 +16,15 @@ task(TASK_UNMAP_CONTRACT, "Unmap Contracts")
   )
   .addParam<string>("nchainid", "Remote ChainID", "", types.string)
   .setAction(async (taskArgs, hre): Promise<null> => {
-    const deployments = require("../deployments/deployments.json");
+    // const deployments = require("../deployments/deployments.json");
+    const deployments = require("../deployments/sequencerDeployments.json");
     const handlerABI = require("../build/contracts/genericHandler.json");
     const network = await hre.ethers.provider.getNetwork();
     const lchainID = network.chainId.toString();
 
     const handlerContract: Contract = await hre.ethers.getContractAt(
       handlerABI,
-      deployments[lchainID].handler
+      deployments[lchainID].sequencerHandler
     );
 
     await handlerContract.UnMapContract([

@@ -12,19 +12,20 @@ import {
 
 task(TASK_DEPLOY, "Deploys the project").setAction(
   async (taskArgs, hre): Promise<null> => {
-    const deployment = require("../deployments/deployments.json");
-    // const deployment = require("../deployments/sequencerDeployments.json");
+    // const deployment = require("../deployments/deployments.json");
+    const deployment = require("../deployments/sequencerDeployments.json");
 
     const network = await hre.ethers.provider.getNetwork();
     const chainId = network.chainId;
 
-    const handler = deployment[chainId].handler;
+    const sequencerHandler = deployment[chainId].sequencerHandler;
+    const erc20Handler = deployment[chainId].erc20Handler;
     const feeToken = deployment[chainId].feeToken;
     const linker = deployment[chainId].linker;
 
     const contract = await hre.ethers.getContractFactory("SequencerGreeter");
 
-    const greeter = await contract.deploy(handler);
+    const greeter = await contract.deploy(sequencerHandler, erc20Handler);
     await greeter.deployed();
     console.log(`Greeter deployed to: `, greeter.address);
 

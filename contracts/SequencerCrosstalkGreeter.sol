@@ -11,8 +11,8 @@ contract SequencerGreeter is RouterSequencerCrossTalk {
     uint256 public nonce;
     mapping(uint256 => bytes32) public nonceToHash;
 
-    constructor(address _sequencerHandler)
-        RouterSequencerCrossTalk(_sequencerHandler)
+    constructor(address _sequencerHandler, address _erc20Handler)
+        RouterSequencerCrossTalk(_sequencerHandler, _erc20Handler)
     {
         owner = msg.sender;
     }
@@ -24,6 +24,14 @@ contract SequencerGreeter is RouterSequencerCrossTalk {
 
     function _approveFees(address _feeToken, uint256 _value) public {
         approveFees(_feeToken, _value);
+    }
+
+    function _approveTokens(
+        address _toBeApproved,
+        address _token,
+        uint256 _value
+    ) public {
+        approveTokens(_toBeApproved, _token, _value);
     }
 
     function greet() public view returns (string memory) {
@@ -64,7 +72,8 @@ contract SequencerGreeter is RouterSequencerCrossTalk {
             _crossChainGasLimit,
             _crossChainGasPrice,
             this.fetchFeeToken(),
-            _isTransferFirst
+            _isTransferFirst,
+            false
         );
         (bool success, bytes32 hash) = routerSend(params);
         nonceToHash[nonce] = hash;
@@ -72,7 +81,35 @@ contract SequencerGreeter is RouterSequencerCrossTalk {
         return success;
     }
 
-    function replaySetGreetingAndTransferCrossChain(
+    function setGreeting(
+        uint8 _chainID,
+        string memory _greeting,
+        uint256 _crossChainGasLimit,
+        uint256 _crossChainGasPrice
+    ) external onlyOwner returns (bool) {
+        nonce = nonce + 1;
+        bytes memory data = abi.encode(_greeting);
+        bytes4 _selector = bytes4(keccak256("setGreeting(string)"));
+        bytes memory _generic = abi.encode(_selector, data);
+
+        Params memory params = Params(
+            _chainID,
+            bytes("dummy_data"),
+            bytes("dummy_data"),
+            _generic,
+            _crossChainGasLimit,
+            _crossChainGasPrice,
+            this.fetchFeeToken(),
+            false,
+            true
+        );
+        (bool success, bytes32 hash) = routerSend(params);
+        nonceToHash[nonce] = hash;
+        require(success == true, "unsuccessful");
+        return success;
+    }
+
+    function replayTransaction(
         uint256 _nonce,
         uint256 _crossChainGasLimit,
         uint256 _crossChainGasPrice

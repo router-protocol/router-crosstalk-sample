@@ -20,14 +20,14 @@ task(TASK_MAP_CONTRACT, "Map Contracts")
     const handlerABI = require("../build/contracts/genericHandler.json");
 
     const deployments = require("../deployments/sequencerDeployments.json");
-    // const deployments = require("../deployments/sequencerDeployments.json");
+    // const deployments = require("../deployments/deployments.json");
 
     const network = await hre.ethers.provider.getNetwork();
     const lchainID = network.chainId.toString();
 
     const handlerContract: Contract = await hre.ethers.getContractAt(
       handlerABI,
-      deployments[lchainID].handler
+      deployments[lchainID].sequencerHandler
     );
 
     await handlerContract.MapContract([
