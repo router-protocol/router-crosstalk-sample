@@ -20,7 +20,10 @@ contract Greeter is RouterCrossTalk {
         _;
     }
 
-    function _approveFees(address _feeToken, uint256 _value) public {
+    function _approveFees(address _feeToken, uint256 _value)
+        external
+        onlyOwner
+    {
         approveFees(_feeToken, _value);
     }
 
