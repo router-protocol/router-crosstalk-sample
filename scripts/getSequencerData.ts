@@ -32,8 +32,8 @@ const main = async () => {
     dest_chain_id: "250", // Fantom
     src_token_address: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174", // USDC on Polygon
     dest_token_address: "0x04068DA6C83AFCFA0e13ba15A6696662335D5B75", // USDC on Fantom
-    user_address: wallet.address,
-    fee_token_address: "0x16ECCfDbb4eE1A85A33f3A9B21175Cd7Ae753dB4", // ROUTE on Polygon
+    user_address: "0xB0B3c94Eef058505637c3d10934C9FC36177aB82", // Receiver on Fantom
+    fee_token_address: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174", // USDC on Polygon
     slippage_tolerance: 2.0,
     genericData: "0x00", // Dummmy data
     gasLimit: "1000000",

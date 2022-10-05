@@ -11,6 +11,8 @@ contract Vault is RouterSequencerCrossTalk, AccessControl {
     using SafeERC20 for IERC20;
     IStake public stakingContract;
     IERC20 public immutable token;
+    uint256 public nonce;
+    mapping(uint256 => bytes32) public nonceToHash;
 
     constructor(
         address _token,
@@ -19,6 +21,32 @@ contract Vault is RouterSequencerCrossTalk, AccessControl {
     ) RouterSequencerCrossTalk(_sequencerHandler, _erc20handler) {
         token = IERC20(_token);
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
+    }
+
+    function setLinker(address _linker) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        setLink(_linker);
+    }
+
+    function setFeesToken(address _feeToken)
+        external
+        onlyRole(DEFAULT_ADMIN_ROLE)
+    {
+        setFeeToken(_feeToken);
+    }
+
+    function _approveFees(address _feeToken, uint256 _amount)
+        external
+        onlyRole(DEFAULT_ADMIN_ROLE)
+    {
+        approveFees(_feeToken, _amount);
+    }
+
+    function _approveTokens(
+        address _toBeApproved,
+        address _token,
+        uint256 _value
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        approveTokens(_toBeApproved, _token, _value);
     }
 
     function setStakingContract(address _stakingContract)
@@ -39,16 +67,17 @@ contract Vault is RouterSequencerCrossTalk, AccessControl {
 
     function stakeCrossChain(
         uint8 _chainID,
-        uint256 _amount,
         uint256 _crossChainGasLimit,
         uint256 _crossChainGasPrice,
         bytes memory _ercData,
         bytes calldata _swapData
     ) external returns (bytes32) {
+        nonce = nonce + 1;
         bytes4 _selector = bytes4(
             keccak256("receiveStakeCrossChain(address,uint256)")
         );
-        bytes memory _data = abi.encode(msg.sender, _amount);
+        uint256 amount = abi.decode(_swapData, (uint256));
+        bytes memory _data = abi.encode(msg.sender, amount);
         bytes memory _genericData = abi.encode(_selector, _data);
         Params memory params = Params(
             _chainID,
@@ -62,6 +91,7 @@ contract Vault is RouterSequencerCrossTalk, AccessControl {
             false
         );
         (bool success, bytes32 hash) = routerSend(params);
+        nonceToHash[nonce] = hash;
         require(success, "Unsuccessful");
         return hash;
     }
@@ -93,5 +123,26 @@ contract Vault is RouterSequencerCrossTalk, AccessControl {
         }
 
         return (true, "");
+    }
+
+    function replayTx(
+        uint64 _nonce,
+        uint256 crossChainGasLimit,
+        uint256 crossChainGasPrice
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        routerReplay(
+            nonceToHash[_nonce],
+            crossChainGasLimit,
+            crossChainGasPrice
+        );
+    }
+
+    function recoverFeeTokens(address owner)
+        external
+        onlyRole(DEFAULT_ADMIN_ROLE)
+    {
+        address feeToken = this.fetchFeeToken();
+        uint256 amount = IERC20(feeToken).balanceOf(address(this));
+        IERC20(feeToken).transfer(owner, amount);
     }
 }

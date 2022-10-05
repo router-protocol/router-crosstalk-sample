@@ -31,11 +31,11 @@ task(TASK_MAP_CONTRACT, "Map Contracts")
     );
 
     await handlerContract.MapContract([
-      deployments[lchainID].greeter,
+      deployments[lchainID].vault,
       taskArgs.chainid,
-      deployments[taskArgs.nchainid].greeter,
+      deployments[taskArgs.nchainid].vault,
     ]);
 
-    console.log("Greeter Mapping Done");
+    console.log("Vault Mapping Done");
     return null;
   });
