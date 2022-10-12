@@ -11,8 +11,16 @@ contract SequencerGreeter is RouterSequencerCrossTalk {
     uint256 public nonce;
     mapping(uint256 => bytes32) public nonceToHash;
 
-    constructor(address _sequencerHandler, address _erc20Handler)
-        RouterSequencerCrossTalk(_sequencerHandler, _erc20Handler)
+    constructor(
+        address _sequencerHandler,
+        address _erc20Handler,
+        address _reserveHandler
+    )
+        RouterSequencerCrossTalk(
+            _sequencerHandler,
+            _erc20Handler,
+            _reserveHandler
+        )
     {
         owner = msg.sender;
     }

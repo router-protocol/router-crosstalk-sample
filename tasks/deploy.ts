@@ -20,12 +20,18 @@ task(TASK_DEPLOY, "Deploys the project").setAction(
 
     const sequencerHandler = deployment[chainId].sequencerHandler;
     const erc20Handler = deployment[chainId].erc20Handler;
+    const reserveHandler = deployment[chainId].reserveHandler;
     const feeToken = deployment[chainId].feeToken;
     const linker = deployment[chainId].linker;
 
     const contract = await hre.ethers.getContractFactory("SequencerGreeter");
 
-    const greeter = await contract.deploy(sequencerHandler, erc20Handler);
+    const greeter = await contract.deploy(
+      sequencerHandler,
+      erc20Handler,
+      reserveHandler
+    );
+
     await greeter.deployed();
     console.log(`Greeter deployed to: `, greeter.address);
 
