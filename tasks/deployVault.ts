@@ -12,7 +12,6 @@ import {
 
 task(TASK_DEPLOY_VAULT, "Deploys the vault contract").setAction(
   async (taskArgs, hre): Promise<null> => {
-    // const deployment = require("../deployments/deployments.json");
     const deployment = require("../deployments/sequencerDeployments.json");
 
     const network = await hre.ethers.provider.getNetwork();
@@ -20,13 +19,19 @@ task(TASK_DEPLOY_VAULT, "Deploys the vault contract").setAction(
 
     const sequencerHandler = deployment[chainId].sequencerHandler;
     const erc20Handler = deployment[chainId].erc20Handler;
+    const reserveHandler = deployment[chainId].reserveHandler;
     const feeToken = deployment[chainId].feeToken;
     const linker = deployment[chainId].linker;
     const token = deployment[chainId].token;
 
     const contract = await hre.ethers.getContractFactory("Vault");
 
-    const vault = await contract.deploy(token, sequencerHandler, erc20Handler);
+    const vault = await contract.deploy(
+      token,
+      sequencerHandler,
+      erc20Handler,
+      reserveHandler
+    );
     await vault.deployed();
     console.log(`vault deployed to: `, vault.address);
 

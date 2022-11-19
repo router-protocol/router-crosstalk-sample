@@ -2,7 +2,7 @@
 /* eslint-disable node/no-unpublished-import */
 /* eslint-disable node/no-missing-import */
 import { TASK_APPROVE_TOKENS } from "./task-names";
-import { task, types } from "hardhat/config";
+import { task } from "hardhat/config";
 
 task(TASK_APPROVE_TOKENS, "Vault approves staaking contract").setAction(
   async (taskArgs, hre): Promise<null> => {

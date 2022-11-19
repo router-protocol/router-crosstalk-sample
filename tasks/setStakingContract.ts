@@ -2,7 +2,7 @@
 /* eslint-disable node/no-unpublished-import */
 /* eslint-disable node/no-missing-import */
 
-import { task, types } from "hardhat/config";
+import { task } from "hardhat/config";
 import { TASK_SET_STAKING_CONTRACT } from "./task-names";
 
 task(

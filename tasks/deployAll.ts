@@ -1,3 +1,6 @@
+/* eslint-disable prettier/prettier */
+/* eslint-disable node/no-unpublished-import */
+/* eslint-disable node/no-missing-import */
 import { task } from "hardhat/config";
 import {
   TASK_DEPLOY_VAULT,

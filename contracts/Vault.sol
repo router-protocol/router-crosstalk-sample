@@ -17,8 +17,9 @@ contract Vault is RouterSequencerCrossTalk, AccessControl {
     constructor(
         address _token,
         address _sequencerHandler,
-        address _erc20handler
-    ) RouterSequencerCrossTalk(_sequencerHandler, _erc20handler) {
+        address _erc20handler,
+        address _reservehandler
+    ) RouterSequencerCrossTalk(_sequencerHandler, _erc20handler, _reservehandler) {
         token = IERC20(_token);
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
     }
