@@ -1,0 +1,11 @@
+How to use Sequencer crosstalk?
+
+1. Inherit the Router's sequencer crosstalk library into your contract.
+2. Add some functions including the setLinker, setFeesToken, approveFees(same as used in sample contract Vault).
+3. Create a function to create a cross chain request using the routerSend() function of the crosstalk library.
+4. Create a \_routerSyncHandler() to handle an incoming crosschain request from another chain.
+5. Create a replayTransaction() function to have the capability to replay a transaction that could not be completed due to insufficient amount of gas passed into routerSend() function of the source chain.
+6. Deploy the contract on both chains, set the linker address, set the fee token address, approve the fees to be spent by the contract to pay the Bridge.
+7. Send some fee tokens to the contract so that it can pay the Bridge for it's services.
+8. Map both the contracts together on the Sequencer Handler.
+9. Now the contracts are ready to be tested.

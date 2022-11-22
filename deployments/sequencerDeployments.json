@@ -1,22 +1,18 @@
 {
   "137": {
-    "sequencerHandler": "0xF9785FEaC03af3Ec18E749127Dc32CB8c032C2e1",
-    "erc20Handler": "0xaA21842e6348C28dB315F063Dc08df60Db41395d",
-    "reserveHandler": "0xaA21842e6348C28dB315F063Dc08df60Db41395d",
-    "linker": "0x6c7E6e9985f97278DcA3aa6C4Be999CD13C128fD",
+    "sequencerHandler": "0x460282F868A9b90Be4a58266Ec61FFc47d447223",
+    "erc20Handler": "0x00b8F3E184e5DaAadB8fdA995bbabBCC1b35Ae93",
+    "reserveHandler": "0x6e14f48576265272B6CAA3A7cC500a26050Be64E",
+    "linker": "0xabcdc08242E4395B0f78E476af4b6c2659f1DBC8",
     "feeToken": "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
-    "token": "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
-    "vault": "0xcC978305Bc8F818cB93aC8bbaA16b534ac2dB93d",
-    "stake": "0x97E7AE224ff561351697032066A11b9bA146d9e8"
+    "token": "0x2791bca1f2de4661ed88a30c99a7a9449aa84174"
   },
-  "250": {
-    "sequencerHandler": "0xA9844f6c58FA3405564c9285753e344e464D0C3f",
-    "erc20Handler": "0x6a03E7f0A6c5F8A79b8Ee6Dfe6359A3B6b960A55",
-    "reserveHandler": "0x6a03E7f0A6c5F8A79b8Ee6Dfe6359A3B6b960A55",
-    "linker": "0x6c7E6e9985f97278DcA3aa6C4Be999CD13C128fD",
-    "feeToken": "0x04068da6c83afcfa0e13ba15a6696662335d5b75",
-    "token": "0x04068da6c83afcfa0e13ba15a6696662335d5b75",
-    "vault": "0xB0B3c94Eef058505637c3d10934C9FC36177aB82",
-    "stake": "0xD48E24D57f075A00C19397F6E2eb83CfE6F0bC29"
+  "43114": {
+    "sequencerHandler": "0xEb225ddFd75870c772BDE3c63a7011F12520403E",
+    "erc20Handler": "0x00b8F3E184e5DaAadB8fdA995bbabBCC1b35Ae93",
+    "reserveHandler": "0x6e14f48576265272B6CAA3A7cC500a26050Be64E",
+    "linker": "0xabcdc08242E4395B0f78E476af4b6c2659f1DBC8",
+    "feeToken": "0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664",
+    "token": "0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664"
   }
 }

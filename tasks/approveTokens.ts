@@ -4,7 +4,7 @@
 import { TASK_APPROVE_TOKENS } from "./task-names";
 import { task } from "hardhat/config";
 
-task(TASK_APPROVE_TOKENS, "Vault approves staaking contract").setAction(
+task(TASK_APPROVE_TOKENS, "Vault approves staking contract").setAction(
   async (taskArgs, hre): Promise<null> => {
     const deployment = require("../deployments/sequencerDeployments.json");
 

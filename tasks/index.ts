@@ -12,3 +12,4 @@ import "./deployStake";
 import "./deployAll";
 import "./setStakingContract";
 import "./approveTokens";
+import "./verify";
