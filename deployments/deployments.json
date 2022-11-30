@@ -1,18 +1,18 @@
 {
   "137": {
     "handler": "0x10BA4774cDBF19f3a4ed652005E0078e021bDF3E",
-    "linker": "0x6c7E6e9985f97278DcA3aa6C4Be999CD13C128fD",
-    "feeToken": "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270",
-    "uri": "shivam.io/",
+    "linker": "0xabcdc08242E4395B0f78E476af4b6c2659f1DBC8",
+    "feeToken": "0x16ECCfDbb4eE1A85A33f3A9B21175Cd7Ae753dB4",
+    "uri": "router.abc/",
     "crossChainGas": "100000",
-    "CERC1155": "0x4C8D80186A539Bb31F67B907421b6d02a946E825"
+    "CERC1155": "0x2fDf0Ae4D03e61fe6CC1B83811aD52D961d74bE0"
   },
-  "250": {
-    "handler": "0x6AfC517BcAC2e0e4BF6bB0F41383732E6359D541",
-    "linker": "0x6c7E6e9985f97278DcA3aa6C4Be999CD13C128fD",
-    "feeToken": "0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83",
-    "uri": "shivam.io/",
+  "43114": {
+    "handler": "0xB41d9B7E27757C1081092C57880641c3D4a276cC",
+    "linker": "0xabcdc08242E4395B0f78E476af4b6c2659f1DBC8",
+    "feeToken": "0x5102E361bDFB8D7F5930f6B9BbA513ca546928D6",
+    "uri": "router.abc/",
     "crossChainGas": "100000",
-    "CERC1155": "0x445CEd281e5313cF4dd8DfEf9256a2179284E6AF"
+    "CERC1155": "0x7B6AC9F693Ae7A23f96361730CE646Efc2285B64"
   }
 }

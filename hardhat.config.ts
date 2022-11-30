@@ -7,14 +7,7 @@ import "@nomiclabs/hardhat-waffle";
 import "@typechain/hardhat";
 import "hardhat-gas-reporter";
 import "solidity-coverage";
-import "./tasks/deploy";
-import "./tasks/setLinker";
-import "./tasks/setFeeToken";
-import "./tasks/storeDeployments";
-import "./tasks/mapContracts";
-import "./tasks/unMapContracts";
-import "./tasks/approveFees";
-import "./tasks/setCrossChainGas";
+import "./tasks";
 dotenv.config();
 
 // This is a sample Hardhat task. To learn how to create your own go to
@@ -71,6 +64,10 @@ const config: HardhatUserConfig = {
       url: process.env.FTM_RPC || "",
       accounts: [mnemonic],
     },
+    avalanche: {
+      url: process.env.AVALANCHE_RPC || "",
+      accounts: [mnemonic],
+    },
   },
   gasReporter: {
     enabled: process.env.REPORT_GAS !== undefined,
@@ -82,6 +79,7 @@ const config: HardhatUserConfig = {
       polygonMumbai: process.env.POLYGON_KEY,
       bsc: process.env.BSC_KEY,
       opera: process.env.FTMSCAN_KEY,
+      avalanche: process.env.AVALANCHE_ETHERSCAN_KEY,
     },
   },
 };

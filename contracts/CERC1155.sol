@@ -37,8 +37,12 @@ contract CERC1155 is ERC1155, RouterCrossTalk {
         setFeeToken(_feeToken);
     }
 
+    function _approveFees(address _feeToken, uint256 _amount) public onlyOwner {
+        approveFees(_feeToken, _amount);
+    }
+
     /**
-     * @notice setCrossChainGasLimit Used to set CrossChainGasLimit, this can only be set by CrossChain Admin or Admins
+     * @notice setCrossChainGasLimit Used to set CrossChainGasLimit
      * @param _gasLimit Amount of gasLimit that is to be set
      */
     function setCrossChainGasLimit(uint256 _gasLimit) public onlyOwner {
@@ -53,21 +57,33 @@ contract CERC1155 is ERC1155, RouterCrossTalk {
         return _crossChainGasLimit;
     }
 
+    /**
+     * @notice transferCrossChain used to create a cross-chain transfer request
+     * @param _chainID Router internal chain ID of the destination chain (https://dev.routerprotocol.com/important-parameters/supported-chains)
+     * @param _recipient address of the recipient of the NFT on the destination chain
+     * @param _ids NFT ids you want to transfer cross-chain
+     * @param _amounts NFT amounts for specific ids you want to transfer cross-chain
+     * @param _data arbitrary data for NFT minting on destination chain. (pass "" if none)
+     */
     function transferCrossChain(
         uint8 _chainID,
         address _recipient,
         uint256[] memory _ids,
         uint256[] memory _amounts,
-        bytes memory _data
-    ) public {
-        bool sent = _sendCrossChain(
+        bytes memory _data,
+        uint256 _crossChainGasPrice
+    ) public returns (bytes32) {
+        (bool sent, bytes32 hash) = _sendCrossChain(
             _chainID,
             _recipient,
             _ids,
             _amounts,
-            _data
+            _data,
+            _crossChainGasPrice
         );
+
         require(sent == true, "Unsuccessful");
+        return hash;
     }
 
     /**
@@ -78,25 +94,27 @@ contract CERC1155 is ERC1155, RouterCrossTalk {
         address _recipient,
         uint256[] memory _ids,
         uint256[] memory _amounts,
-        bytes memory _data
-    ) internal returns (bool) {
+        bytes memory _data,
+        uint256 _crossChainGasPrice
+    ) internal returns (bool, bytes32) {
         _burnBatch(msg.sender, _ids, _amounts);
         bytes4 _selector = bytes4(
             keccak256("receiveCrossChain(address,uint256[],uint256[],bytes)")
         );
         bytes memory data = abi.encode(_recipient, _ids, _amounts, _data);
-        bool success = routerSend(
+        (bool success, bytes32 hash) = routerSend(
             _destChainID,
             _selector,
             data,
-            _crossChainGasLimit
+            _crossChainGasLimit,
+            _crossChainGasPrice
         );
 
-        return success;
+        return (success, hash);
     }
 
     /**
-     * @notice _routerSyncHandler This is an internal function to control the handling of various selectors and its corresponding
+     * @notice _routerSyncHandler Handles cross-chain request received from any other chain
      * @param _selector Selector to interface.
      * @param _data Data to be handled.
      */
@@ -127,20 +145,33 @@ contract CERC1155 is ERC1155, RouterCrossTalk {
      * @param _ids TokenIds
      * @param _amounts Number of tokens with `_ids`
      * @param _data Additional data used to mint on destination side
-     * @return bool returns true when completed
      */
     function receiveCrossChain(
         address _recipient,
         uint256[] memory _ids,
         uint256[] memory _amounts,
         bytes memory _data
-    ) external isSelf returns (bool) {
+    ) external isSelf {
         _mintBatch(_recipient, _ids, _amounts, _data);
-        return true;
+    }
+
+    /**
+     * @notice replayTransaction Used to replay the transaction if it failed due to low gaslimit or gasprice
+     * @param hash Hash returned by transferCrossChain function
+     * @param crossChainGasLimit new crossChainGasLimit
+     * @param crossChainGasPrice new crossChainGasPrice
+     * NOTE gasLimit and gasPrice passed in this function should be greater than what was passed earlier
+     */
+    function replayTransaction(
+        bytes32 hash,
+        uint256 crossChainGasLimit,
+        uint256 crossChainGasPrice
+    ) internal {
+        routerReplay(hash, crossChainGasLimit, crossChainGasPrice);
     }
 
     function recoverFeeTokens() external onlyOwner {
-        address feeToken = this.fetchFeetToken();
+        address feeToken = this.fetchFeeToken();
         uint256 amount = IERC20(feeToken).balanceOf(address(this));
         IERC20(feeToken).transfer(owner, amount);
     }
