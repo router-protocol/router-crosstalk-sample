@@ -141,7 +141,7 @@ contract Vault is RouterSequencerCrossTalk, AccessControl {
             _selector ==
             bytes4(keccak256("receiveStakeCrossChain(address,address,uint256)"))
         ) {
-            address user = abi.decode(_data, address);
+            address user = abi.decode(_data, (address));
             (bool success, bytes memory data) = address(this).call(
                 abi.encodeWithSelector(
                     _selector,

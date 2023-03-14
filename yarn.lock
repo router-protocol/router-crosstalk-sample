@@ -854,10 +854,10 @@
     path-browserify "^1.0.0"
     url "^0.11.0"
 
-"@routerprotocol/router-crosstalk@^0.1.6":
-  version "0.1.6"
-  resolved "https://registry.yarnpkg.com/@routerprotocol/router-crosstalk/-/router-crosstalk-0.1.6.tgz#b394c3969d0e378dbe0087df5db63164b0b3698e"
-  integrity sha512-fmCYbWLluoQU/0iAgOvcLg3teT0sEXRKBYkQfEQXaCQ8zDzsgzxdoS3Vfooj+eyslqkwWystwdSfILrLqXKAcw==
+"@routerprotocol/router-crosstalk@^0.1.8":
+  version "0.1.8"
+  resolved "https://registry.yarnpkg.com/@routerprotocol/router-crosstalk/-/router-crosstalk-0.1.8.tgz#a3b829e8a1cc74ab25b6e7add5f09c3bc09150b2"
+  integrity sha512-/F9PofpQu8dVfo6q6BrTtNpoNmKEmk+rwORZOlX5ayztKDRiDf/wxxaIJNyBAq/PyvwGUdODotGsKVvVi7KkJA==
   dependencies:
     "@openzeppelin/contracts" "^4.5.0"
     "@openzeppelin/contracts-upgradeable" "4.4.2"
