@@ -10,12 +10,10 @@ import "./IStake.sol";
 contract Vault is RouterSequencerCrossTalk, AccessControl {
     using SafeERC20 for IERC20;
     IStake public stakingContract;
-    IERC20 public immutable token;
     uint256 public nonce;
     mapping(uint256 => bytes32) public nonceToHash;
 
     constructor(
-        address _token,
         address _sequencerHandler,
         address _erc20handler,
         address _reservehandler
@@ -26,8 +24,31 @@ contract Vault is RouterSequencerCrossTalk, AccessControl {
             _reservehandler
         )
     {
-        token = IERC20(_token);
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
+    }
+
+    function getTotalFees(
+        uint8 destinationChainID,
+        address feeTokenAddress,
+        uint256 widgetID,
+        uint256 gasLimit,
+        uint256 gasPrice
+    ) external returns (uint256) {
+        (, uint256 ercFee, ) = erc20Handler.getBridgeFee(
+            destinationChainID,
+            feeTokenAddress,
+            widgetID
+        );
+
+        uint256 genericFee = sequencerHandler.calculateFees(
+            destinationChainID,
+            feeTokenAddress,
+            gasLimit,
+            gasPrice
+        );
+
+        uint256 totalFees = ercFee + genericFee;
+        return totalFees;
     }
 
     function setLinker(address _linker) external onlyRole(DEFAULT_ADMIN_ROLE) {
@@ -63,13 +84,13 @@ contract Vault is RouterSequencerCrossTalk, AccessControl {
         stakingContract = IStake(_stakingContract);
     }
 
-    function stake(uint256 _amount) external {
-        token.safeTransferFrom(msg.sender, address(this), _amount);
-        stakingContract.stake(msg.sender, _amount);
+    function stake(address _token, uint256 _amount) external {
+        IERC20(_token).safeTransferFrom(msg.sender, address(this), _amount);
+        stakingContract.stake(msg.sender, _token, _amount);
     }
 
-    function unstake(uint256 _amount) external {
-        stakingContract.unstake(msg.sender, _amount);
+    function unstake(address _token, uint256 _amount) external {
+        stakingContract.unstake(msg.sender, _token, _amount);
     }
 
     function stakeCrossChain(
@@ -81,10 +102,9 @@ contract Vault is RouterSequencerCrossTalk, AccessControl {
     ) external returns (bytes32) {
         nonce = nonce + 1;
         bytes4 _selector = bytes4(
-            keccak256("receiveStakeCrossChain(address,uint256)")
+            keccak256("receiveStakeCrossChain(address,address,uint256)")
         );
-        uint256 amount = abi.decode(_swapData, (uint256));
-        bytes memory _data = abi.encode(msg.sender, amount);
+        bytes memory _data = abi.encode(msg.sender);
         bytes memory _genericData = abi.encode(_selector, _data);
         Params memory params = Params(
             _chainID,
@@ -103,28 +123,32 @@ contract Vault is RouterSequencerCrossTalk, AccessControl {
         return hash;
     }
 
-    function receiveStakeCrossChain(address _user, uint256 _amount)
-        external
-        isSelf
-    {
-        stakingContract.stake(_user, _amount);
+    function receiveStakeCrossChain(
+        address _user,
+        address _settlementToken,
+        uint256 _amount
+    ) external isSelf {
+        stakingContract.stake(_user, _settlementToken, _amount);
     }
 
-    function _routerSyncHandler(bytes4 _selector, bytes memory _data)
-        internal
-        override
-        returns (bool, bytes memory)
-    {
+    function _routerSyncHandler(
+        bytes4 _selector,
+        bytes memory _data,
+        address _settlementToken,
+        uint256 _returnAmount
+    ) internal override returns (bool, bytes memory) {
         if (
             _selector ==
-            bytes4(keccak256("receiveStakeCrossChain(address,uint256)"))
+            bytes4(keccak256("receiveStakeCrossChain(address,address,uint256)"))
         ) {
-            (address user, uint256 amount) = abi.decode(
-                _data,
-                (address, uint256)
-            );
+            address user = abi.decode(_data, address);
             (bool success, bytes memory data) = address(this).call(
-                abi.encodeWithSelector(_selector, user, amount)
+                abi.encodeWithSelector(
+                    _selector,
+                    user,
+                    _settlementToken,
+                    _returnAmount
+                )
             );
             return (success, data);
         }

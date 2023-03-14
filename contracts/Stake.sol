@@ -9,14 +9,12 @@ contract Stake is IStake {
     using SafeERC20 for IERC20;
     using SafeMath for uint256;
     address public immutable vault;
-    IERC20 public immutable token;
 
-    // user address  => staked amount
-    mapping(address => uint256) public stakedBalance;
+    // user address => token address => staked amount
+    mapping(address => mapping(address => uint256)) public stakedBalance;
 
-    constructor(address _vault, address _token) {
+    constructor(address _vault) {
         vault = _vault;
-        token = IERC20(_token);
     }
 
     modifier onlyVault() {
@@ -24,19 +22,27 @@ contract Stake is IStake {
         _;
     }
 
-    function stake(address user, uint256 amount) external override onlyVault {
-        uint256 balanceBefore = token.balanceOf(address(this));
-        token.safeTransferFrom(msg.sender, address(this), amount);
-        uint256 balanceAfter = token.balanceOf(address(this));
+    function stake(
+        address user,
+        address token,
+        uint256 amount
+    ) external override onlyVault {
+        uint256 balanceBefore = IERC20(token).balanceOf(address(this));
+        IERC20(token).safeTransferFrom(msg.sender, address(this), amount);
+        uint256 balanceAfter = IERC20(token).balanceOf(address(this));
         uint256 _amount = balanceAfter.sub(balanceBefore, "No amount received");
-        stakedBalance[user] += _amount;
+        stakedBalance[user][token] += _amount;
     }
 
-    function unstake(address user, uint256 amount) external override onlyVault {
-        stakedBalance[user] = stakedBalance[user].sub(
+    function unstake(
+        address user,
+        address token,
+        uint256 amount
+    ) external override onlyVault {
+        stakedBalance[user][token] = stakedBalance[user][token].sub(
             amount,
             "User balance too low"
         );
-        token.safeTransfer(user, amount);
+        IERC20(token).safeTransfer(user, amount);
     }
 }
